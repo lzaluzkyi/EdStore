@@ -36,7 +36,7 @@ public class ItemDAOImpl implements ItemDAO {
     @Override
     public List<Item> findByCategory(Category category) {
         EntityManager entityManager = DAOUtils.getEntityManager();
-        List resultList = entityManager.createNativeQuery("select * from  item where category_id = :categoryId", Item.class)
+        List resultList = entityManager.createQuery("select i from Item as i where i.category.id = :categoryId", Item.class)
                 .setParameter("categoryId", category.getId()).getResultList();
         return resultList;
     }

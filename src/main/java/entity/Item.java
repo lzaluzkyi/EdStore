@@ -38,6 +38,12 @@ public class Item {
     @ManyToMany(mappedBy = "items")
     private List<Order> ourOrders;
 
+
+    public Item(Long id, Boolean creditAvailable) {
+        this.id = id;
+        this.creditAvailable = creditAvailable;
+    }
+
     @Override
     public String toString() {
         return "Item{" +

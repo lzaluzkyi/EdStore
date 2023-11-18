@@ -30,18 +30,23 @@ public class Application {
 //        item.setCategory(new Category(1L , "second Category" , null));
 //        itemService.create(item);
 //
-        User user = new User();
-        user.setId(1L);
+//        User user = new User();
+//        user.setId(1L);
+//
+//        Item item = itemService.findById(1L);
+//        System.out.println(item.getName());
+//        Category category = item.getCategory();
+//
+//        List<Item> items = category.getItems();
+//        Order buy = orderService.buy(user, items);
+//        System.out.println(buy.toString());
+//        List<Order> all = orderService.getAll();
+//        System.out.println(all.toString());
 
-        Item item = itemService.findById(1L);
-        System.out.println(item.getName());
-        Category category = item.getCategory();
-
-        List<Item> items = category.getItems();
-        Order buy = orderService.buy(user, items);
-        System.out.println(buy.toString());
-        List<Order> all = orderService.getAll();
-        System.out.println(all.toString());
+        Category category = new Category();
+        category.setId(1L);
+        List<Item> byCategory = itemService.findByCategory(category);
+        System.out.println(byCategory.toString());
 
 
     }
