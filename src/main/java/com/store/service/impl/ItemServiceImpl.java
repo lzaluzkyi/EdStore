@@ -1,11 +1,11 @@
 package com.store.service.impl;
 
 import com.store.dao.ItemDAO;
-import com.store.dao.impl.ItemDAOImpl;
+import com.store.dao.impl.CategoryDAOImpl;
+import com.store.dto.ItemDTO;
 import com.store.entity.Category;
 import com.store.entity.Item;
 import com.store.service.ItemService;
-import com.store.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,11 +15,14 @@ import java.util.List;
 public class ItemServiceImpl implements ItemService {
 
     private ItemDAO itemDAO;
+    private CategoryDAOImpl categoryDAO;
 
     @Autowired
-    public void setItemDAO(ItemDAO itemDAO) {
+    public ItemServiceImpl(ItemDAO itemDAO, CategoryDAOImpl categoryDAO) {
         this.itemDAO = itemDAO;
+        this.categoryDAO = categoryDAO;
     }
+
 
     @Override
     public Item create(Item item) {
@@ -29,7 +32,21 @@ public class ItemServiceImpl implements ItemService {
         if (item.getName().startsWith("H")) {
             item.setCreditAvailable(true);
         }
-        return save(item);
+        return itemDAO.save(item);
+    }
+
+
+
+    @Override
+    public Item create(ItemDTO itemDTO) {
+        Item newItem = new Item();
+        newItem.setCreditAvailable(itemDTO.getCreditAvailable());
+        newItem.setCategory(categoryDAO.findById(itemDTO.getCategory().getId()));
+        newItem.setName(itemDTO.getName());
+        newItem.setDescription(itemDTO.getDescription());
+        newItem.setStockCount(itemDTO.getStockCount());
+        newItem.setPrice(itemDTO.getPrice());
+        return create(newItem);
     }
 
     @Override
@@ -39,14 +56,33 @@ public class ItemServiceImpl implements ItemService {
         }
         Item existItem = findById(item.getId());
         if (existItem != null) {
-            return save(item);
+            return itemDAO.update(item);
         }
         throw new IllegalArgumentException("We cant find item with id " + item.getId());
     }
 
     @Override
+    public Item update(ItemDTO itemDTO) {
+        Item newItem = new Item();
+        newItem.setId(itemDTO.getId());
+        newItem.setCreditAvailable(itemDTO.getCreditAvailable());
+        Category category = categoryDAO.findById(itemDTO.getCategory().getId());
+        newItem.setCategory(category);
+        newItem.setName(itemDTO.getName());
+        newItem.setDescription(itemDTO.getDescription());
+        newItem.setStockCount(itemDTO.getStockCount());
+        newItem.setPrice(itemDTO.getPrice());
+        return update(newItem);
+    }
+
+    @Override
     public Item findById(Long id) {
         return itemDAO.findById(id);
+    }
+
+    @Override
+    public List<Item> findAll() {
+        return itemDAO.getAll();
     }
 
     @Override
@@ -62,7 +98,8 @@ public class ItemServiceImpl implements ItemService {
         return itemDAO.findByName(startWith);
     }
 
-    private Item save(Item item) {
-        return itemDAO.save(item);
+    @Override
+    public void delete(Long itemId) {
+        itemDAO.delete(itemId);
     }
 }

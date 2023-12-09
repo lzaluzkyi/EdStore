@@ -1,6 +1,8 @@
 package com.store.entity;
 
 import javax.persistence.*;
+
+import com.store.dto.ItemDTO;
 import lombok.*;
 
 import java.math.BigDecimal;

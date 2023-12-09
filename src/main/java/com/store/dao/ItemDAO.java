@@ -7,6 +7,7 @@ import java.util.List;
 
 public interface ItemDAO {
 
+    Item update(Item item);
     Item save(Item item);
 
     Item findById(Long id);
@@ -15,4 +16,7 @@ public interface ItemDAO {
 
     List<Item> findByName(String startWith);
 
+    List<Item> getAll();
+
+    void delete(Long itemId);
 }

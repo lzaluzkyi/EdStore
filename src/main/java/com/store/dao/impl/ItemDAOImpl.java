@@ -21,6 +21,18 @@ public class ItemDAOImpl implements ItemDAO {
 
 
     @Override
+    public Item update(Item item) {
+        logger.info("Start saving -> " + item.toString());
+        EntityManager entityManager = DAOUtils.getEntityManager();
+        EntityTransaction transaction = entityManager.getTransaction();
+        transaction.begin();
+        entityManager.merge(item);
+        transaction.commit();
+        logger.info("End saving new item id is " + item.getId());
+        return item;
+    }
+
+    @Override
     public Item save(Item item) {
         logger.info("Start saving -> " + item.toString());
         EntityManager entityManager = DAOUtils.getEntityManager();
@@ -54,5 +66,23 @@ public class ItemDAOImpl implements ItemDAO {
         List resultList = entityManager.createNativeQuery("select * from  item where name like (:name)", Item.class)
                 .setParameter("name", startWith).getResultList();
         return resultList;
+    }
+
+    @Override
+    public List<Item> getAll() {
+        EntityManager entityManager = DAOUtils.getEntityManager();
+        List resultList = entityManager.createQuery("select i from Item as i ", Item.class)
+                .getResultList();
+        return resultList;
+    }
+
+    @Override
+    public void delete(Long itemId) {
+        EntityManager entityManager = DAOUtils.getEntityManager();
+        EntityTransaction transaction = entityManager.getTransaction();
+        transaction.begin();
+        Item byId = findById(itemId);
+        entityManager.remove(byId);
+        transaction.commit();
     }
 }
