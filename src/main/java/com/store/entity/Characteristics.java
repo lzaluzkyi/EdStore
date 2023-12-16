@@ -2,7 +2,7 @@ package com.store.entity;
 
 import lombok.Data;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import org.jetbrains.annotations.NotNull;
 
 @Entity

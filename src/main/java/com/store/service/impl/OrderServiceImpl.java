@@ -1,12 +1,13 @@
 package com.store.service.impl;
 
-import com.store.dao.OrderDAO;
-import com.store.dao.impl.OrderDAOImpl;
+import com.store.repository.OrderRepository;
 import com.store.entity.Item;
 import com.store.entity.Order;
 import com.store.entity.Status;
 import com.store.entity.User;
+import com.store.service.ItemService;
 import com.store.service.OrderService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -17,8 +18,8 @@ import java.util.List;
 @Service
 public class OrderServiceImpl implements OrderService {
 
-    private OrderDAO orderDAO;
-
+    @Autowired
+    private OrderRepository orderRepository;
 
     @Override
     public Order buy(User user, List<Item> itemsToBuy) {
@@ -29,13 +30,13 @@ public class OrderServiceImpl implements OrderService {
         order.setStatus(Status.NEW);
         order.setUser(user);
         order.setPrice(collectPrice(itemsToBuy));
-        Order savedOrder = orderDAO.create(order);
+        Order savedOrder = orderRepository.save(order);
         return savedOrder;
     }
 
     @Override
     public List<Order> getAll() {
-        return orderDAO.getAll();
+        return orderRepository.findAll();
     }
 
     private BigDecimal collectPrice(List<Item> items){

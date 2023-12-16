@@ -20,7 +20,7 @@ public interface ItemService {
     List<Item> findByCategory(Category category);
 
     List<Item> findByName(String startWith);
-
+    Integer countByName(String startWith);
 
     void delete(Long itemId);
 }

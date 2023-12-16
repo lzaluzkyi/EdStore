@@ -1,26 +1,29 @@
 package com.store.service.impl;
 
-import com.store.dao.ItemDAO;
-import com.store.dao.impl.CategoryDAOImpl;
+import com.store.repository.CategoryRepository;
+import com.store.repository.ItemRepository;
 import com.store.dto.ItemDTO;
 import com.store.entity.Category;
 import com.store.entity.Item;
 import com.store.service.ItemService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ItemServiceImpl implements ItemService {
 
-    private ItemDAO itemDAO;
-    private CategoryDAOImpl categoryDAO;
+    private ItemRepository itemRepository;
+    private CategoryRepository categoryRepository;
 
     @Autowired
-    public ItemServiceImpl(ItemDAO itemDAO, CategoryDAOImpl categoryDAO) {
-        this.itemDAO = itemDAO;
-        this.categoryDAO = categoryDAO;
+    public ItemServiceImpl(ItemRepository itemRepository, CategoryRepository categoryRepository) {
+        this.itemRepository = itemRepository;
+        this.categoryRepository = categoryRepository;
     }
 
 
@@ -32,7 +35,7 @@ public class ItemServiceImpl implements ItemService {
         if (item.getName().startsWith("H")) {
             item.setCreditAvailable(true);
         }
-        return itemDAO.save(item);
+        return itemRepository.save(item);
     }
 
 
@@ -41,7 +44,8 @@ public class ItemServiceImpl implements ItemService {
     public Item create(ItemDTO itemDTO) {
         Item newItem = new Item();
         newItem.setCreditAvailable(itemDTO.getCreditAvailable());
-        newItem.setCategory(categoryDAO.findById(itemDTO.getCategory().getId()));
+        Optional<Category> category = categoryRepository.findById(itemDTO.getCategory().getId());
+        newItem.setCategory(category.get());
         newItem.setName(itemDTO.getName());
         newItem.setDescription(itemDTO.getDescription());
         newItem.setStockCount(itemDTO.getStockCount());
@@ -56,7 +60,7 @@ public class ItemServiceImpl implements ItemService {
         }
         Item existItem = findById(item.getId());
         if (existItem != null) {
-            return itemDAO.update(item);
+            return itemRepository.save(item);
         }
         throw new IllegalArgumentException("We cant find item with id " + item.getId());
     }
@@ -66,7 +70,7 @@ public class ItemServiceImpl implements ItemService {
         Item newItem = new Item();
         newItem.setId(itemDTO.getId());
         newItem.setCreditAvailable(itemDTO.getCreditAvailable());
-        Category category = categoryDAO.findById(itemDTO.getCategory().getId());
+        Category category = categoryRepository.getById(itemDTO.getCategory().getId());
         newItem.setCategory(category);
         newItem.setName(itemDTO.getName());
         newItem.setDescription(itemDTO.getDescription());
@@ -76,18 +80,20 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Item findById(Long id) {
-        return itemDAO.findById(id);
+        Item item = itemRepository.findById(id).get();
+        return item;
     }
 
     @Override
     public List<Item> findAll() {
-        return itemDAO.getAll();
+        return itemRepository.findAll();
     }
 
     @Override
     public List<Item> findByCategory(Category category) {
-        return itemDAO.findByCategory(category);
+        return itemRepository.findByCategory(category);
     }
 
     @Override
@@ -95,11 +101,20 @@ public class ItemServiceImpl implements ItemService {
         if (startWith.isEmpty()) {
             throw new IllegalArgumentException("startWith cant be empty");
         }
-        return itemDAO.findByName(startWith);
+        return itemRepository.findByNameStartingWith(startWith);
+    }
+
+    @Override
+    public Integer countByName(String startWith) {
+        if (startWith.isEmpty()) {
+            throw new IllegalArgumentException("startWith cant be empty");
+        }
+        return itemRepository.countByNameStartingWith(startWith);
     }
 
     @Override
     public void delete(Long itemId) {
-        itemDAO.delete(itemId);
+        Item item = findById(itemId);
+        itemRepository.delete(item);
     }
 }

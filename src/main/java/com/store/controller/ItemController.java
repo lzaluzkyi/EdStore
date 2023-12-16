@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.xml.transform.OutputKeys;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -59,5 +60,17 @@ public class ItemController {
         return new ResponseEntity(HttpStatus.OK);
     }
 
+    @GetMapping("/find")
+    private List<ItemDTO> getByName(@RequestParam(name = "name") String name) {
+        List<Item> items = itemService.findByName(name);
+        List<ItemDTO> itemDTOS = items.stream().map(item -> new ItemDTO(item)).collect(Collectors.toList());
+        return itemDTOS;
+    }
+
+    @GetMapping("/count")
+    private ResponseEntity<Integer> getCountByName(@RequestParam(name = "name") String name) {
+        Integer integer = itemService.countByName(name);
+        return new ResponseEntity<>(integer , HttpStatus.OK);
+    }
 
 }

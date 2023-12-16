@@ -1,6 +1,6 @@
 package com.store.entity;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 import com.store.dto.ItemDTO;
 import lombok.*;
